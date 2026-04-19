@@ -1,65 +1,77 @@
-﻿#include <iostream>
+#include <iostream>
+#include <cassert>
 
-int main() {
-    double num1;
-    double num2;
-    char operation;
+using namespace std;
 
+// ГЛОБАЛЬНЫЕ ПЕРЕМЕННЫЕ
+double total = 0;
+double currentNum = 0;
+char operation;
+
+//ОТДЕЛЬНЫЕ ФУНКЦИИ ДЛЯ КАЖДОГО ДЕЙСТВИЯ
+
+void add() { total += currentNum; }
+void subtract() { total -= currentNum; }
+void multiply() { total *= currentNum; }
+void divide() {
+    assert(currentNum != 0);
+    total /= currentNum;
+}
+
+//ФУНКЦИИ ВВОДА
+
+void getNumber() {
+    while (!(cin >> currentNum)) {
+        cerr << "Error: Enter a number: ";
+        cin.clear();
+        cin.ignore(1000, '\n');
+    }
+}
+
+void getOperation() {
     while (true) {
-        std::cout << "\n Calculation \n";
-
-        std::cout << "Enter first number: ";
-        std::cin >> num1;
-
-        if (std::cin.fail()) {
-            std::cout << "Error: Its a letter\n";
-
-            std::cin.clear();
-
-            std::cin.ignore(1000, '\n');
-
-            continue;
-        }
-
-        std::cout << "Enter operation : ";
-        std::cin >> operation;
-
-        if (operation == 'q') {
-            std::cout << "Goodbye";
+        cin >> operation;
+        if (operation == '+' || operation == '-' || operation == '*' ||
+            operation == '/' || operation == 'q' || operation == '=') {
             break;
         }
+        cerr << "Error: Unknown operator! Try again (+, -, *, /, =, q): ";
+    }
+}
 
-        std::cout << "Enter second number: ";
-        std::cin >> num2;
 
-        if (std::cin.fail()) {
-            std::cout << "Error: Its a letter\n";
+int main(int argc, char* argv[]) {
+    cout << "Program: " << argv[0] << endl;
+    if (argc > 1) cout << "Launched with args!" << endl;
 
-            std::cin.clear();
+    cout << "Enter starting number: ";
+    getNumber();
+    total = currentNum;
 
-            std::cin.ignore(1000, '\n');
+    while (true) {
+        cout << "[" << total << "] Operation: ";
+        getOperation();
 
+        if (operation == 'q') break;
+        if (operation == '=') {
+            cout << "Current result: " << total << endl;
             continue;
         }
 
-        if (operation == '+') {
-            std::cout << "Result: " << num1 + num2 << "\n";
+        cout << "Enter next number: ";
+        getNumber();
+
+        if (operation == '/' && currentNum == 0) {
+            cerr << "Critical Error: Division by zero" << endl;
+            continue;
         }
-        else if (operation == '-') {
-            std::cout << "Result: " << num1 - num2 << "\n";
-        }
-        else if (operation == '*') {
-            std::cout << "Result: " << num1 * num2 << "\n";
-        }
-        else if (operation == '/') {
-            if (num2 == 0) {
-                std::cout << "Error: Division by zero\n";
-            }
-            else {
-                std::cout << "Result: " << num1 / num2 << "\n";
-            }
-        }
+
+        if (operation == '+') add();
+        else if (operation == '-') subtract();
+        else if (operation == '*') multiply();
+        else if (operation == '/') divide();
     }
 
+    cout << "Final: " << total << endl;
     return 0;
 }
